@@ -77,7 +77,7 @@ export default function Home() {
         <div className="flex flex-col h-full">
           <div className="flex-1">
             <ScrollArea className="h-full">
-              <div ref={chatContainerRef} className="space-y-4">
+              <div ref={chatContainerRef} className="space-y-4 flex w-full flex-col">
                 {messages.map(message => (
                   <div
                     key={message.id}
