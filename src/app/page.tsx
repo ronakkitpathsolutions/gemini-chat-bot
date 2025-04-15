@@ -71,50 +71,65 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-secondary">
-      <div className="flex-1 p-4 sm:p-6 relative">
-        <ScrollArea className="h-full">
-          <div ref={chatContainerRef} className="space-y-4">
-            {messages.map(message => (
-              <div
-                key={message.id}
-                className={cn(
-                  'max-w-2xl rounded-lg px-4 py-2',
-                  message.isUser
-                    ? 'bg-accent text-background self-end'
-                    : 'bg-card text-card-foreground self-start'
+    <div className="flex h-screen bg-background">
+      {/* Left side (content area) */}
+      <div className="flex-1 p-4 sm:p-6">
+        <div className="flex flex-col h-full">
+          <div className="flex-1">
+            <ScrollArea className="h-full">
+              <div ref={chatContainerRef} className="space-y-4">
+                {messages.map(message => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      'max-w-2xl rounded-lg px-4 py-2',
+                      message.isUser
+                        ? 'bg-primary text-primary-foreground self-end'
+                        : 'bg-secondary text-secondary-foreground self-start'
+                    )}
+                  >
+                    {message.text}
+                  </div>
+                ))}
+                {isLoading && (
+                  <div className="max-w-2xl rounded-lg px-4 py-2 bg-muted text-muted-foreground self-start">
+                    Thinking...
+                  </div>
                 )}
-              >
-                {message.text}
               </div>
-            ))}
-            {isLoading && (
-              <div className="max-w-2xl rounded-lg px-4 py-2 bg-muted text-muted-foreground self-start">
-                Thinking...
-              </div>
-            )}
+            </ScrollArea>
           </div>
-        </ScrollArea>
-      </div>
-      <div className="p-4 sm:p-6 border-t border-border">
-        <div className="flex items-center space-x-4">
-          <Textarea
-            rows={1}
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 resize-none"
-            onKeyDown={e => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent newline
-                handleSendMessage();
-              }
-            }}
-          />
-          <Button onClick={handleSendMessage} disabled={isLoading}>
-            {isLoading ? 'Sending...' : 'Send'}
-          </Button>
+          {/* Input area */}
+          <div className="p-4 sm:p-6 border-t border-border">
+            <div className="flex items-center space-x-4">
+              <Textarea
+                rows={1}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                placeholder="Type your message..."
+                className="flex-1 resize-none"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent newline
+                    handleSendMessage();
+                  }
+                }}
+              />
+              <Button onClick={handleSendMessage} disabled={isLoading}>
+                {isLoading ? 'Sending...' : 'Send'}
+              </Button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      {/* Right side (optional sidebar) */}
+      <div className="w-80 border-l border-border p-4 sm:p-6 bg-secondary">
+        {/* Add sidebar content here */}
+        <h2 className="text-lg font-semibold mb-4">Sidebar</h2>
+        <p className="text-sm text-muted-foreground">
+          This is an example sidebar. You can add any content here.
+        </p>
       </div>
     </div>
   );
