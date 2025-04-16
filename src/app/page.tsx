@@ -121,24 +121,22 @@ export default function Home() {
                     )}
                   >
                     {message.image && (
-                      
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <img
-                              src={message.image}
-                              alt="Uploaded"
-                              className="mb-2 h-20 w-20 rounded-md object-cover"
-                            />
-                          </PopoverTrigger>
-                          <PopoverContent className="w-80">
-                            <img
-                              src={message.image}
-                              alt="Uploaded"
-                              className="h-80 w-80 rounded-md object-cover"
-                            />
-                          </PopoverContent>
-                        </Popover>
-                      
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <img
+                            src={message.image}
+                            alt="Uploaded"
+                            className="mb-2 h-20 w-20 rounded-md object-cover cursor-pointer"
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-80 h-80">
+                          <img
+                            src={message.image}
+                            alt="Uploaded"
+                            className="h-full w-full rounded-md object-cover"
+                          />
+                        </PopoverContent>
+                      </Popover>
                     )}
                     {message.text}
                   </div>
@@ -167,21 +165,21 @@ export default function Home() {
                 }}
               />
               <div className="flex items-center space-x-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="image-upload"
-                    ref={fileInputRef}
-                  />
-                  <label htmlFor="image-upload">
-                    <Button variant="secondary" className='p-3' asChild>
-                      <Upload className="h-10 w-10"/>
-                    </Button>
-                  </label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                  ref={fileInputRef}
+                />
+                <label htmlFor="image-upload">
+                  <Button variant="secondary" className='p-3' asChild>
+                    <Upload className="h-10 w-10"/>
+                  </Button>
+                </label>
 
-                </div>
+              </div>
               <Button onClick={handleSendMessage} disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send'}
               </Button>
