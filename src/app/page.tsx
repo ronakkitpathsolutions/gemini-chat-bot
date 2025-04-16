@@ -174,9 +174,22 @@ export default function Home() {
                   ref={fileInputRef}
                 />
                 <label htmlFor="image-upload">
-                  <Button variant="secondary" className='p-3' asChild>
-                    <Upload className="h-10 w-10"/>
-                  </Button>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="secondary" className='p-3' asChild>
+                        <Upload className="h-10 w-10"/>
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-20 h-20">
+                      {selectedImage && (
+                        <img
+                          src={selectedImage}
+                          alt="Preview"
+                          className="h-full w-full rounded-md object-cover"
+                        />
+                      )}
+                    </PopoverContent>
+                  </Popover>
                 </label>
 
               </div>
