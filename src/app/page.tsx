@@ -172,15 +172,6 @@ export default function Home() {
                 {isLoading ? 'Sending...' : 'Send'}
               </Button>
             </div>
-             {selectedImage && (
-              <div className="mt-2">
-                <img
-                  src={selectedImage}
-                  alt="Preview"
-                  className="max-h-48 max-w-full rounded-md"
-                />
-              </div>
-            )}
           </div>
         </div>
       </div>
