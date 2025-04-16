@@ -168,11 +168,7 @@ export default function Home() {
                       <Upload className="h-4 w-4"/>
                     </Button>
                   </label>
-                  {selectedImage && (
-                    <Button variant="ghost" size="sm" onClick={handleClearImage}>
-                      Clear
-                    </Button>
-                  )}
+
                 </div>
               <Button onClick={handleSendMessage} disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send'}
