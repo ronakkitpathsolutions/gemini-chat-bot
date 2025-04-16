@@ -129,7 +129,7 @@ export default function Home() {
                             className="mb-2 h-20 w-20 rounded-md object-cover cursor-pointer"
                           />
                         </PopoverTrigger>
-                        <PopoverContent className="w-80 h-80 p-2">
+                        <PopoverContent className="w-40 h-40 p-2">
                           <div className="relative">
                             <img
                               src={message.image}
@@ -139,10 +139,10 @@ export default function Home() {
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="absolute right-2 top-2 rounded-full text-destructive opacity-70 hover:opacity-100"
+                              className="absolute right-1 top-1 rounded-full text-destructive opacity-70 hover:opacity-100"
                               onClick={handleClearImage}
                             >
-                              <X className="h-4 w-4"/>
+                              <X className="h-3 w-3"/>
                               <span className="sr-only">Remove Image</span>
                             </Button>
                           </div>
