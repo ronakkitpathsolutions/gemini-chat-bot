@@ -8,7 +8,7 @@ import {ScrollArea} from '@/components/ui/scroll-area';
 import {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
-import {Upload} from 'lucide-react';
+import {Upload, X} from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -129,12 +129,23 @@ export default function Home() {
                             className="mb-2 h-20 w-20 rounded-md object-cover cursor-pointer"
                           />
                         </PopoverTrigger>
-                        <PopoverContent className="w-80 h-80">
-                          <img
-                            src={message.image}
-                            alt="Uploaded"
-                            className="h-full w-full rounded-md object-cover"
-                          />
+                        <PopoverContent className="w-80 h-80 p-2">
+                          <div className="relative">
+                            <img
+                              src={message.image}
+                              alt="Uploaded"
+                              className="h-full w-full rounded-md object-cover"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-2 top-2 rounded-full text-destructive opacity-70 hover:opacity-100"
+                              onClick={handleClearImage}
+                            >
+                              <X className="h-4 w-4"/>
+                              <span className="sr-only">Remove Image</span>
+                            </Button>
+                          </div>
                         </PopoverContent>
                       </Popover>
                     )}
@@ -180,15 +191,26 @@ export default function Home() {
                         <Upload className="h-10 w-10"/>
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-20 h-20">
-                      {selectedImage && (
-                        <img
-                          src={selectedImage}
-                          alt="Preview"
-                          className="h-full w-full rounded-md object-cover"
-                        />
-                      )}
-                    </PopoverContent>
+                    {selectedImage && (
+                      <PopoverContent className="w-20 h-20 p-2">
+                        <div className="relative">
+                          <img
+                            src={selectedImage}
+                            alt="Preview"
+                            className="h-full w-full rounded-md object-cover"
+                          />
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-2 top-2 rounded-full text-destructive opacity-70 hover:opacity-100"
+                            onClick={handleClearImage}
+                          >
+                            <X className="h-4 w-4"/>
+                            <span className="sr-only">Remove Image</span>
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    )}
                   </Popover>
                 </label>
 
