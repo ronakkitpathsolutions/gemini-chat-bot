@@ -42,7 +42,10 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const aiResponse = await generateResponse({message: input});
+      // Extract chat history from the current messages state
+      const chatHistory = messages;
+
+      const aiResponse = await generateResponse({message: input, chatHistory: chatHistory});
 
       const aiMessage: ChatMessage = {
         id: Date.now().toString() + '-ai',
@@ -134,3 +137,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

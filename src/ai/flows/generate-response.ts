@@ -1,18 +1,24 @@
 'use server';
 
 /**
- * @fileOverview This file defines a Genkit flow that sends user input to the Gemini API and returns the AI's response.
+ * @fileOverview This file defines a Genkit flow that sends user input to the Gemini API and returns the AI's response, incorporating chat history.
  *
- * - generateResponse - A function that sends user input to the Gemini API and returns the AI's response.
- * - GenerateResponseInput - The input type for the generateResponse function.
+ * - generateResponse - A function that sends user input and chat history to the Gemini API and returns the AI's response.
+ * - GenerateResponseInput - The input type for the generateResponse function, including the user message and chat history.
  * - GenerateResponseOutput - The return type for the generateResponse function.
  */
 
 import {ai} from '@/ai/ai-instance';
 import {z} from 'genkit';
 
+const ChatMessageSchema = z.object({
+  text: z.string().describe('The content of the message.'),
+  isUser: z.boolean().describe('Whether the message was sent by the user.'),
+});
+
 const GenerateResponseInputSchema = z.object({
   message: z.string().describe('The user input message.'),
+  chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
 });
 export type GenerateResponseInput = z.infer<typeof GenerateResponseInputSchema>;
 
@@ -41,6 +47,7 @@ const generateResponsePrompt = ai.definePrompt({
   input: {
     schema: z.object({
       message: z.string().describe('The user input message.'),
+      chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
     }),
   },
   output: {
@@ -48,7 +55,18 @@ const generateResponsePrompt = ai.definePrompt({
       response: z.string().describe('The AI response.'),
     }),
   },
-  prompt: `You are a helpful AI assistant. Respond to the user message:
+  prompt: `You are a helpful AI assistant. Respond to the user message, taking into account the previous chat history to maintain context:
+
+{{#if chatHistory}}
+Chat History:
+  {{#each chatHistory}}
+    {{#if isUser}}
+      User: {{{text}}}
+    {{else}}
+      AI: {{{text}}}
+    {{/if}}
+  {{/each}}
+{{/if}}
 
 Message: {{{message}}}`,
   tools: [useFallbackModel],
@@ -59,6 +77,7 @@ const generateResponseFallbackPrompt = ai.definePrompt({
   input: {
     schema: z.object({
       message: z.string().describe('The user input message.'),
+      chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
     }),
   },
   output: {
@@ -66,7 +85,18 @@ const generateResponseFallbackPrompt = ai.definePrompt({
       response: z.string().describe('The AI response.'),
     }),
   },
-  prompt: `You are a helpful AI assistant, using a less capable model than usual. Respond to the user message:
+  prompt: `You are a helpful AI assistant, using a less capable model than usual. Respond to the user message, taking into account the previous chat history to maintain context:
+
+{{#if chatHistory}}
+Chat History:
+  {{#each chatHistory}}
+    {{#if isUser}}
+      User: {{{text}}}
+    {{else}}
+      AI: {{{text}}}
+    {{/if}}
+  {{/each}}
+{{/if}}
 
 Message: {{{message}}}`,
 });
@@ -96,3 +126,5 @@ const generateResponseFlow = ai.defineFlow<
     }
   }
 );
+
+    
