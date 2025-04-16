@@ -138,6 +138,10 @@ const generateResponseFlow = ai.defineFlow<
       return output!;
     } catch (e: any) {
       console.error('Main model failed', e);
+      if (e.message.includes('Provided image is not valid') && e.message.includes('400 Bad Request')) {
+        console.warn('Skipping fallback model due to invalid image error.');
+        return {response: 'The provided image is not valid. Please try a different image.'};
+      }
       // If the tool was called, use the fallback model.
       const {output} = await generateResponseFallbackPrompt(input);
       return output!;
