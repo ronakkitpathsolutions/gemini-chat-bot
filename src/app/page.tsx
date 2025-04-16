@@ -185,14 +185,14 @@ export default function Home() {
                   ref={fileInputRef}
                 />
                 <label htmlFor="image-upload">
-                  <Popover>
+                  <Popover open={!!selectedImage} >
                     <PopoverTrigger asChild>
                       <Button variant="secondary" className='p-3' asChild>
                         <Upload className="h-10 w-10"/>
                       </Button>
                     </PopoverTrigger>
                     {selectedImage && (
-                      <PopoverContent className="w-20 h-20 p-2">
+                      <PopoverContent className="w-20 h-auto max-h-5 p-1">
                         <div className="relative">
                           <img
                             src={selectedImage}
@@ -200,9 +200,9 @@ export default function Home() {
                             className="h-full w-full rounded-md object-cover"
                           />
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="icon"
-                            className="absolute right-2 top-2 rounded-full text-destructive opacity-70 hover:opacity-100"
+                            className="absolute -right-4 -top-4 rounded-full focus-visible:!ring-0 w-5 h-5 focus-visible:!ring-offset-0 opacity-70 focus:!ring-0 hover:opacity-100"
                             onClick={handleClearImage}
                           >
                             <X className="h-4 w-4"/>
