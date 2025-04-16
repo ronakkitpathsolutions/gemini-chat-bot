@@ -7,6 +7,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {ScrollArea} from '@/components/ui/scroll-area';
 import {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {Upload} from 'lucide-react';
 
 interface ChatMessage {
@@ -120,11 +121,24 @@ export default function Home() {
                     )}
                   >
                     {message.image && (
-                      <img
-                        src={message.image}
-                        alt="Uploaded"
-                        className="mb-2 max-h-48 max-w-full rounded-md"
-                      />
+                      
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <img
+                              src={message.image}
+                              alt="Uploaded"
+                              className="mb-2 h-20 w-20 rounded-md object-cover"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-80">
+                            <img
+                              src={message.image}
+                              alt="Uploaded"
+                              className="h-80 w-80 rounded-md object-cover"
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      
                     )}
                     {message.text}
                   </div>
