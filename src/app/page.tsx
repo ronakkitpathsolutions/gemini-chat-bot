@@ -7,6 +7,7 @@ import {Textarea} from '@/components/ui/textarea';
 import {ScrollArea} from '@/components/ui/scroll-area';
 import {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
+import {Upload} from 'lucide-react';
 
 interface ChatMessage {
   id: string;
@@ -114,8 +115,8 @@ export default function Home() {
                     className={cn(
                       'max-w-2xl rounded-lg px-4 py-2',
                       message.isUser
-                        ? 'bg-primary text-primary-foreground self-end'
-                        : 'bg-secondary text-secondary-foreground self-start'
+                        ? 'bg-primary text-primary-foreground self-start'
+                        : 'bg-secondary text-secondary-foreground self-end'
                     )}
                   >
                     {message.image && (
@@ -129,7 +130,7 @@ export default function Home() {
                   </div>
                 ))}
                 {isLoading && (
-                  <div className="max-w-2xl rounded-lg px-4 py-2 bg-muted text-muted-foreground self-start">
+                  <div className="max-w-2xl rounded-lg px-4 py-2 bg-muted text-muted-foreground self-end">
                     Thinking...
                   </div>
                 )}
@@ -139,26 +140,7 @@ export default function Home() {
           {/* Input area */}
           <div className="p-4 sm:p-6 border-t border-border">
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                  id="image-upload"
-                  ref={fileInputRef}
-                />
-                <label htmlFor="image-upload">
-                  <Button variant="secondary" size="sm" asChild>
-                    <span >Upload Image</span>
-                  </Button>
-                </label>
-                {selectedImage && (
-                  <Button variant="ghost" size="sm" onClick={handleClearImage}>
-                    Clear
-                  </Button>
-                )}
-              </div>
+
               <Textarea
                 rows={1}
                 value={input}
@@ -172,6 +154,26 @@ export default function Home() {
                   }
                 }}
               />
+              <div className="flex items-center space-x-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                    id="image-upload"
+                    ref={fileInputRef}
+                  />
+                  <label htmlFor="image-upload">
+                    <Button variant="secondary" size="sm" asChild>
+                      <Upload className="h-4 w-4"/>
+                    </Button>
+                  </label>
+                  {selectedImage && (
+                    <Button variant="ghost" size="sm" onClick={handleClearImage}>
+                      Clear
+                    </Button>
+                  )}
+                </div>
               <Button onClick={handleSendMessage} disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send'}
               </Button>
