@@ -140,13 +140,11 @@ export default function Home() {
           {/* Input area */}
           <div className="p-4 sm:p-6 border-t border-border">
             <div className="flex items-center space-x-4">
-
               <Textarea
-                rows={1}
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Type your message..."
-                className="flex-1 resize-none"
+                placeholder="Type your message"
+                className="flex-1 resize-none h-[40px]"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault(); // Prevent newline
@@ -164,8 +162,8 @@ export default function Home() {
                     ref={fileInputRef}
                   />
                   <label htmlFor="image-upload">
-                    <Button variant="secondary" size="sm" asChild>
-                      <Upload className="h-4 w-4"/>
+                    <Button variant="secondary" className='p-3' asChild>
+                      <Upload className="h-10 w-10"/>
                     </Button>
                   </label>
 
