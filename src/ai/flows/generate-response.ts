@@ -14,11 +14,13 @@ import {z} from 'genkit';
 const ChatMessageSchema = z.object({
   text: z.string().describe('The content of the message.'),
   isUser: z.boolean().describe('Whether the message was sent by the user.'),
+  image: z.string().optional().describe('Optional image data URL.'),
 });
 
 const GenerateResponseInputSchema = z.object({
   message: z.string().describe('The user input message.'),
   chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
+  image: z.string().optional().describe('Optional image data URL.'), // Added image input
 });
 export type GenerateResponseInput = z.infer<typeof GenerateResponseInputSchema>;
 
@@ -48,6 +50,7 @@ const generateResponsePrompt = ai.definePrompt({
     schema: z.object({
       message: z.string().describe('The user input message.'),
       chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
+      image: z.string().optional().describe('Optional image data URL.'), // Added image to the schema
     }),
   },
   output: {
@@ -55,20 +58,27 @@ const generateResponsePrompt = ai.definePrompt({
       response: z.string().describe('The AI response.'),
     }),
   },
-  prompt: `You are a helpful AI assistant. Respond to the user message, taking into account the previous chat history to maintain context:
+  prompt: `You are a helpful AI assistant. Respond to the user message, taking into account the previous chat history to maintain context.  If the user uploads an image, describe the image, or answer the user's question about the image.
 
 {{#if chatHistory}}
 Chat History:
   {{#each chatHistory}}
     {{#if isUser}}
       User: {{{text}}}
+      {{#if image}}
+        User Image: {{media url=image}}
+      {{/if}}
     {{else}}
       AI: {{{text}}}
     {{/if}}
   {{/each}}
 {{/if}}
 
-Message: {{{message}}}`,
+Message: {{{message}}}
+{{#if image}}
+User Image: {{media url=image}}
+Please describe the image.
+{{/if}}`,
   tools: [useFallbackModel],
 });
 
@@ -78,6 +88,7 @@ const generateResponseFallbackPrompt = ai.definePrompt({
     schema: z.object({
       message: z.string().describe('The user input message.'),
       chatHistory: z.array(ChatMessageSchema).optional().describe('Previous messages in the conversation.'),
+      image: z.string().optional().describe('Optional image data URL.'), // Added image to the schema
     }),
   },
   output: {
@@ -85,20 +96,27 @@ const generateResponseFallbackPrompt = ai.definePrompt({
       response: z.string().describe('The AI response.'),
     }),
   },
-  prompt: `You are a helpful AI assistant, using a less capable model than usual. Respond to the user message, taking into account the previous chat history to maintain context:
+  prompt: `You are a helpful AI assistant, using a less capable model than usual. Respond to the user message, taking into account the previous chat history to maintain context. If the user uploads an image, describe the image, or answer the user's question about the image.
 
 {{#if chatHistory}}
 Chat History:
   {{#each chatHistory}}
     {{#if isUser}}
       User: {{{text}}}
+       {{#if image}}
+        User Image: {{media url=image}}
+      {{/if}}
     {{else}}
       AI: {{{text}}}
     {{/if}}
   {{/each}}
 {{/if}}
 
-Message: {{{message}}}`,
+Message: {{{message}}}
+{{#if image}}
+User Image: {{media url=image}}
+Please describe the image.
+{{/if}}`,
 });
 
 export async function generateResponse(input: GenerateResponseInput): Promise<GenerateResponseOutput> {
@@ -126,5 +144,3 @@ const generateResponseFlow = ai.defineFlow<
     }
   }
 );
-
-    

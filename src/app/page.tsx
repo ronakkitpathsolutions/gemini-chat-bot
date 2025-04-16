@@ -12,6 +12,7 @@ interface ChatMessage {
   id: string;
   text: string;
   isUser: boolean;
+  image?: string; // Optional image data URL
 }
 
 export default function Home() {
@@ -19,6 +20,8 @@ export default function Home() {
   const [input, setInput] = useState('');
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null); // Store image data URL
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     // Scroll to the bottom of the chat container when new messages are added
@@ -28,29 +31,53 @@ export default function Home() {
     });
   }, [messages]);
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string); // Store the data URL
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleClearImage = () => {
+    setSelectedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Clear the file input
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() && !selectedImage) return;
 
     const userMessage: ChatMessage = {
       id: Date.now().toString() + '-user',
       text: input,
       isUser: true,
+      image: selectedImage || undefined, // Include image if available
     };
 
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
+    setSelectedImage(null); // Clear the selected image after sending
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''; // Clear the file input
+    }
     setIsLoading(true);
 
     try {
       // Extract chat history from the current messages state
       const chatHistory = messages;
 
-      const aiResponse = await generateResponse({message: input, chatHistory: chatHistory});
+      const aiResponse = await generateResponse({message: input, chatHistory: chatHistory, image: selectedImage || ''});
 
       const aiMessage: ChatMessage = {
         id: Date.now().toString() + '-ai',
         text: aiResponse.response,
         isUser: false,
+        image: undefined,
       };
 
       setMessages(prevMessages => [...prevMessages, aiMessage]);
@@ -91,6 +118,13 @@ export default function Home() {
                         : 'bg-secondary text-secondary-foreground self-start'
                     )}
                   >
+                    {message.image && (
+                      <img
+                        src={message.image}
+                        alt="Uploaded"
+                        className="mb-2 max-h-48 max-w-full rounded-md"
+                      />
+                    )}
                     {message.text}
                   </div>
                 ))}
@@ -105,6 +139,26 @@ export default function Home() {
           {/* Input area */}
           <div className="p-4 sm:p-6 border-t border-border">
             <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                  ref={fileInputRef}
+                />
+                <label htmlFor="image-upload">
+                  <Button variant="secondary" size="sm" asChild>
+                    <span >Upload Image</span>
+                  </Button>
+                </label>
+                {selectedImage && (
+                  <Button variant="ghost" size="sm" onClick={handleClearImage}>
+                    Clear
+                  </Button>
+                )}
+              </div>
               <Textarea
                 rows={1}
                 value={input}
@@ -122,6 +176,15 @@ export default function Home() {
                 {isLoading ? 'Sending...' : 'Send'}
               </Button>
             </div>
+             {selectedImage && (
+              <div className="mt-2">
+                <img
+                  src={selectedImage}
+                  alt="Preview"
+                  className="max-h-48 max-w-full rounded-md"
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -137,5 +200,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
