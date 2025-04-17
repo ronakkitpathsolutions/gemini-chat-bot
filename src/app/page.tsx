@@ -9,6 +9,7 @@ import {cn} from '@/lib/utils';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {Upload, X} from 'lucide-react';
 import {toast} from '@/hooks/use-toast';
+import {GoogleGenerativeAI} from "@google/generative-ai";
 
 interface ChatMessage {
   id: string;
@@ -70,17 +71,51 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      // Dynamically import the generateResponse function
-      const {generateResponse} = await import('@/ai/flows/generate-response');
+      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_GENAI_API_KEY ?? '');
+
+      const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
+
+      let prompt = `You are a helpful AI assistant. Respond to the user message, taking into account the previous chat history to maintain context.  If the user uploads an image, describe the image, or answer the user's question about the image.`;
 
       // Extract chat history from the current messages state
-      const chatHistory = messages;
+      if (messages.length > 0) {
+        prompt += `\nChat History:\n`;
+        messages.forEach(message => {
+          if (message.isUser) {
+            prompt += `User: ${message.text}\n`;
+            if (message.image) {
+              prompt += `User Image: ${message.image}\n`;
+            }
+          } else {
+            prompt += `AI: ${message.text}\n`;
+          }
+        });
+      }
 
-      const aiResponse = await generateResponse({message: input, chatHistory: chatHistory, image: selectedImage || ''});
+      prompt += `\nMessage: ${input}`;
+
+      // Only include the image in the prompt if there is also text input.
+      if (input && selectedImage) {
+        prompt += `\nUser Image: ${selectedImage}\nPlease describe the image.`;
+      }
+
+      const parts = [];
+      if (input) {
+        parts.push(input);
+      }
+      if (selectedImage) {
+        parts.push({inlineData: {mimeType: "image/jpeg", data: selectedImage.split(',')[1]}});
+      }
+
+      const result = await model.generateContent({
+        contents: parts.length > 0 ? parts : [prompt]
+      });
+
+      const aiResponse = result.response.text();
 
       const aiMessage: ChatMessage = {
         id: Date.now().toString() + '-ai',
-        text: aiResponse.response,
+        text: aiResponse,
         isUser: false,
         image: undefined,
       };
