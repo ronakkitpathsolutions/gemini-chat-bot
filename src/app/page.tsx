@@ -71,8 +71,12 @@ export default function Home() {
     setIsLoading(true);
 
     try {
-      const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GOOGLE_GENAI_API_KEY ?? '');
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENAI_API_KEY;
+      if (!apiKey) {
+        throw new Error('NEXT_PUBLIC_GOOGLE_GENAI_API_KEY is not set.');
+      }
 
+      const genAI = new GoogleGenerativeAI(apiKey);
       const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
       // Start building the parts array with text if available
