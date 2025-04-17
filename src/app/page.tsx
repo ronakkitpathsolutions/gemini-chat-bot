@@ -1,6 +1,5 @@
 'use client';
 
-import {generateResponse} from '@/ai/flows/generate-response';
 import {Button} from '@/components/ui/button';
 import {Input} from '@/components/ui/input';
 import {Textarea} from '@/components/ui/textarea';
@@ -9,6 +8,7 @@ import {useEffect, useRef, useState} from 'react';
 import {cn} from '@/lib/utils';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {Upload, X} from 'lucide-react';
+import {toast} from '@/hooks/use-toast';
 
 interface ChatMessage {
   id: string;
@@ -70,6 +70,9 @@ export default function Home() {
     setIsLoading(true);
 
     try {
+      // Dynamically import the generateResponse function
+      const {generateResponse} = await import('@/ai/flows/generate-response');
+
       // Extract chat history from the current messages state
       const chatHistory = messages;
 
@@ -88,6 +91,11 @@ export default function Home() {
       // Generic error message
       const errorMessage =
         error.message || 'Failed to get response from AI. Please try again.';
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
 
       setMessages(prevMessages => [
         ...prevMessages,

@@ -62,7 +62,8 @@ const generateResponseFlow = ai.defineFlow<
 
       prompt += `\nMessage: ${input.message}`;
 
-      if (input.image) {
+      // Only include the image in the prompt if there is also text input.
+      if (input.message && input.image) {
         prompt += `\nUser Image: ${input.image}\nPlease describe the image.`;
       }
 
