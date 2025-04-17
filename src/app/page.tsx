@@ -75,41 +75,29 @@ export default function Home() {
 
       const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
-      let prompt = `You are a helpful AI assistant. Respond to the user message, taking into account the previous chat history to maintain context.  If the user uploads an image, describe the image, or answer the user's question about the image.`;
-
-      // Extract chat history from the current messages state
-      if (messages.length > 0) {
-        prompt += `\nChat History:\n`;
-        messages.forEach(message => {
-          if (message.isUser) {
-            prompt += `User: ${message.text}\n`;
-            if (message.image) {
-              prompt += `User Image: ${message.image}\n`;
-            }
-          } else {
-            prompt += `AI: ${message.text}\n`;
-          }
-        });
-      }
-
-      prompt += `\nMessage: ${input}`;
-
-      // Only include the image in the prompt if there is also text input.
-      if (input && selectedImage) {
-        prompt += `\nUser Image: ${selectedImage}\nPlease describe the image.`;
-      }
-
+      // Start building the parts array with text if available
       const parts = [];
       if (input) {
         parts.push(input);
       }
+
+      // Append the image if available.  Gemini accepts base64 encoded images
       if (selectedImage) {
         parts.push({inlineData: {mimeType: "image/jpeg", data: selectedImage.split(',')[1]}});
       }
 
-      const result = await model.generateContent({
-        contents: parts.length > 0 ? parts : [prompt]
+      // Build the chat history.  The format is:
+      // [ { role: 'user', parts: [ parts array ] }, { role: 'model', parts: [ parts array ] } ]
+      const history = messages.map(message => {
+        return {
+          role: message.isUser ? 'user' : 'model',
+          parts: [message.text, message.image ? {inlineData: {mimeType: "image/jpeg", data: message.image.split(',')[1]}} : undefined].filter(Boolean),
+        };
       });
+
+      const chat = model.startChat({history});
+
+      const result = await chat.sendMessage(parts);
 
       const aiResponse = result.response.text();
 
@@ -235,7 +223,7 @@ export default function Home() {
                       </Button>
                     </PopoverTrigger>
                     {selectedImage && (
-                      <PopoverContent className="w-20 h-auto max-h-5 p-1">
+                      <PopoverContent className="w-40 h-auto max-h-5 p-1">
                         <div className="relative">
                           <img
                             src={selectedImage}
