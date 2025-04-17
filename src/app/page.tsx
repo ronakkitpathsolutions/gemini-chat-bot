@@ -102,7 +102,7 @@ export default function Home() {
         return {
           role: message.isUser ? 'user' : 'model',
           parts: [
-            message.text ? message.text : (message.image ? { inlineData: { mimeType: "image/jpeg", data: message.image.split(',')[1] } } : undefined)
+            message.text ? message.text : (message.image ? { inlineData: { mimeType: "image/jpeg", data: message.image.split(',')[1] } } : " "),
           ].filter(Boolean),
         };
       });
