@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   output: 'standalone',
+  experimental: {
+    // Enable esm modules to ensure consistent module resolution.
+    esmExternals: false,
+  },
 };
 
 export default nextConfig;
