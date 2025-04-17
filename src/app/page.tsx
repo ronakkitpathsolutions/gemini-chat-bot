@@ -9,7 +9,7 @@ import {cn} from '@/lib/utils';
 import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover';
 import {Upload, X} from 'lucide-react';
 import {toast} from '@/hooks/use-toast';
-import {GoogleGenerativeAI} from "@google/generative-ai";
+import {GoogleGenerativeAI} from '@google/generative-ai';
 
 interface ChatMessage {
   id: string;
@@ -75,7 +75,8 @@ export default function Home() {
       if (!apiKey) {
         toast({
           title: 'Error',
-          description: 'NEXT_PUBLIC_GOOGLE_GENAI_API_KEY is not set. Please configure your environment variables.',
+          description:
+            'NEXT_PUBLIC_GOOGLE_GENAI_API_KEY is not set. Please configure your environment variables.',
           variant: 'destructive',
         });
         setIsLoading(false);
@@ -83,28 +84,32 @@ export default function Home() {
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
-      const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
+      const model = genAI.getGenerativeModel({model: 'gemini-2.0-flash'});
 
       // Start building the parts array with text if available
-      const parts: any = [];
+      const parts: any[] = [];
       if (input) {
-        parts.push(input);
+        parts.push({text: input}); // Wrap text in { text: ... }
       }
 
       // Append the image if available.  Gemini accepts base64 encoded images
       if (selectedImage) {
-        parts.push({inlineData: {mimeType: "image/jpeg", data: selectedImage.split(',')[1]}});
+        parts.push({
+          inlineData: {mimeType: 'image/jpeg', data: selectedImage.split(',')[1]},
+        });
       }
 
       // Build the chat history.  The format is:
       // [ { role: 'user', parts: [ parts array ] }, { role: 'model', parts: [ parts array ] } ]
       const history = messages.map(message => {
-        const parts = [];
+        const parts: any[] = [];
         if (message.text) {
-          parts.push(message.text);
+          parts.push({text: message.text}); // Wrap text in { text: ... }
         }
         if (message.image) {
-          parts.push({inlineData: {mimeType: "image/jpeg", data: message.image.split(',')[1]}});
+          parts.push({
+            inlineData: {mimeType: 'image/jpeg', data: message.image.split(',')[1]},
+          });
         }
         return {
           role: message.isUser ? 'user' : 'model',
@@ -233,9 +238,9 @@ export default function Home() {
                   ref={fileInputRef}
                 />
                 <label htmlFor="image-upload">
-                  <Popover open={!!selectedImage} >
+                  <Popover open={!!selectedImage}>
                     <PopoverTrigger asChild>
-                      <Button variant="secondary" className='p-3' asChild>
+                      <Button variant="secondary" className="p-3" asChild>
                         <Upload className="h-10 w-10"/>
                       </Button>
                     </PopoverTrigger>
@@ -261,7 +266,6 @@ export default function Home() {
                     )}
                   </Popover>
                 </label>
-
               </div>
               <Button onClick={handleSendMessage} disabled={isLoading}>
                 {isLoading ? 'Sending...' : 'Send'}
