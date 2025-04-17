@@ -73,7 +73,13 @@ export default function Home() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GENAI_API_KEY;
       if (!apiKey) {
-        throw new Error('NEXT_PUBLIC_GOOGLE_GENAI_API_KEY is not set.');
+        toast({
+          title: 'Error',
+          description: 'NEXT_PUBLIC_GOOGLE_GENAI_API_KEY is not set. Please configure your environment variables.',
+          variant: 'destructive',
+        });
+        setIsLoading(false);
+        return;
       }
 
       const genAI = new GoogleGenerativeAI(apiKey);
