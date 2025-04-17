@@ -13,7 +13,7 @@ import {GoogleGenerativeAI} from "@google/generative-ai";
 
 interface ChatMessage {
   id: string;
-  text: string;
+  text?: string;
   isUser: boolean;
   image?: string; // Optional image data URL
 }
@@ -57,7 +57,7 @@ export default function Home() {
 
     const userMessage: ChatMessage = {
       id: Date.now().toString() + '-user',
-      text: input,
+      text: input || undefined,
       isUser: true,
       image: selectedImage || undefined, // Include image if available
     };
@@ -86,7 +86,7 @@ export default function Home() {
       const model = genAI.getGenerativeModel({model: "gemini-2.0-flash"});
 
       // Start building the parts array with text if available
-      const parts = [];
+      const parts: any = [];
       if (input) {
         parts.push(input);
       }
@@ -99,11 +99,16 @@ export default function Home() {
       // Build the chat history.  The format is:
       // [ { role: 'user', parts: [ parts array ] }, { role: 'model', parts: [ parts array ] } ]
       const history = messages.map(message => {
+        const parts = [];
+        if (message.text) {
+          parts.push(message.text);
+        }
+        if (message.image) {
+          parts.push({inlineData: {mimeType: "image/jpeg", data: message.image.split(',')[1]}});
+        }
         return {
           role: message.isUser ? 'user' : 'model',
-          parts: [
-            message.text ? message.text : (message.image ? { inlineData: { mimeType: "image/jpeg", data: message.image.split(',')[1] } } : " "),
-          ].filter(Boolean),
+          parts: parts,
         };
       });
 
