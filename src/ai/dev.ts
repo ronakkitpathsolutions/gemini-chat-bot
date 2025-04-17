@@ -1,2 +1,4 @@
-import '@/ai/flows/route-to-fallback-model.ts';
-import '@/ai/flows/generate-response.ts';
+/ src/ai/dev.ts
+
+// This file is now empty as we are no longer using ai-studio.
+// Keeping it for potential future use or cleanup.

@@ -1,12 +1,11 @@
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
+/ src/ai/ai-instance.ts
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export const ai = genkit({
-  promptDir: './prompts',
-  plugins: [
-    googleAI({
-      apiKey: process.env.GOOGLE_GENAI_API_KEY,
-    }),
-  ],
-  model: 'googleai/gemini-2.0-flash',
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENAI_API_KEY ?? '');
+
+export const generateResponse = async (prompt: string) => {
+  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-pro-latest' });
+  const result = await model.generateContent(prompt);
+  const response = result.response;
+  return response.text();
+};
