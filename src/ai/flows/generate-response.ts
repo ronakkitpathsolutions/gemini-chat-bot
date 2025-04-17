@@ -1,4 +1,3 @@
-/ src/ai/flows/generate-response.ts
 'use server';
 
 /**
@@ -71,10 +70,6 @@ const generateResponseFlow = ai.defineFlow<
       return { response: aiResponse };
     } catch (e: any) {
       console.error('Main model failed', e);
-      if (e.message.includes('Provided image is not valid') && e.message.includes('400 Bad Request')) {
-        console.warn('Skipping fallback model due to invalid image error.');
-        return { response: 'The provided image is not valid. Please try a different image.' };
-      }
       return { response: 'Failed to get response from AI. Please try again.' };
     }
   }
