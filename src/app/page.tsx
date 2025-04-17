@@ -101,7 +101,9 @@ export default function Home() {
       const history = messages.map(message => {
         return {
           role: message.isUser ? 'user' : 'model',
-          parts: [message.text, message.image ? {inlineData: {mimeType: "image/jpeg", data: message.image.split(',')[1]}} : undefined].filter(Boolean),
+          parts: [
+            message.text ? message.text : (message.image ? { inlineData: { mimeType: "image/jpeg", data: message.image.split(',')[1] } } : undefined)
+          ].filter(Boolean),
         };
       });
 
