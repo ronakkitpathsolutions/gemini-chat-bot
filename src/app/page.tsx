@@ -94,8 +94,12 @@ export default function Home() {
 
       // Append the image if available.  Gemini accepts base64 encoded images
       if (selectedImage) {
+        const imageData = selectedImage.split(',')[1];
+        if (!imageData) {
+          throw new Error('Invalid image data');
+        }
         parts.push({
-          inlineData: {mimeType: 'image/jpeg', data: selectedImage.split(',')[1]},
+          inlineData: {mimeType: 'image/jpeg', data: imageData},
         });
       }
 
@@ -107,15 +111,25 @@ export default function Home() {
           parts.push({text: message.text}); // Wrap text in { text: ... }
         }
         if (message.image) {
-          parts.push({
-            inlineData: {mimeType: 'image/jpeg', data: message.image.split(',')[1]},
-          });
+          try {
+            const imageData = message.image.split(',')[1];
+            if (!imageData) {
+              console.error('Invalid image data in history');
+              return null;
+            }
+            parts.push({
+              inlineData: {mimeType: 'image/jpeg', data: imageData},
+            });
+          } catch (e) {
+            console.error('Error processing image in history', e);
+            return null;
+          }
         }
         return {
           role: message.isUser ? 'user' : 'model',
           parts: parts,
         };
-      });
+      }).filter(Boolean);
 
       const chat = model.startChat({history});
 
@@ -134,8 +148,12 @@ export default function Home() {
     } catch (error: any) {
       console.error('Error sending message:', error);
       // Generic error message
-      const errorMessage =
-        error.message || 'Failed to get response from AI. Please try again.';
+      let errorMessage = 'Failed to get response from AI. Please try again.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
       toast({
         title: 'Error',
         description: errorMessage,
